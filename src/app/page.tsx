@@ -126,34 +126,36 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-3">
-            <div className="flex gap-1 rounded-full bg-white/10 px-1 py-1">
-              {teamFilters.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={() => setFilterTeam(t.key)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors sm:px-4 sm:text-sm ${
-                    filterTeam === t.key
-                      ? "bg-[#ec4899] text-white"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2 text-xs font-medium uppercase tracking-wider text-white/60">
-              {(["CAT", "ENG", "ESP"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  className={lang === l ? "text-[#ec4899]" : "hover:text-white/80"}
-                >
-                  {l}
-                </button>
-              ))}
+          <div className="min-w-0 w-full overflow-x-auto overflow-y-hidden scroll-smooth">
+            <div className="flex min-w-max flex-col items-end gap-3">
+              <div className="flex flex-nowrap gap-1 rounded-full bg-white/10 px-1 py-1">
+                {teamFilters.map((t) => (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setFilterTeam(t.key)}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors sm:px-4 sm:text-sm ${
+                      filterTeam === t.key
+                        ? "bg-[#ec4899] text-white"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-nowrap gap-2 text-xs font-medium uppercase tracking-wider text-white/60">
+                {(["CAT", "ENG", "ESP"] as const).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLang(l)}
+                    className={`shrink-0 ${lang === l ? "text-[#ec4899]" : "hover:text-white/80"}`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </header>
