@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0f0a14;
+  --foreground: #fce7f3;
+  --stats-pink: #ec4899;
+  --stats-pink-light: #f472b6;
+  --stats-purple: #581c87;
+  --stats-purple-dark: #3b0764;
+  --overlay: rgba(15, 10, 20, 0.85);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-stats-pink: var(--stats-pink);
+  --color-stats-pink-light: var(--stats-pink-light);
+  --color-stats-purple: var(--stats-purple);
+  --color-stats-purple-dark: var(--stats-purple-dark);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
