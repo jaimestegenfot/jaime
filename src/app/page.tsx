@@ -102,12 +102,12 @@ export default function Home() {
               )}
             </div>
 
-            {/* Foto del jugador: pon tu imagen en public/foto-perfil.jpg */}
+            {/* Foto del jugador: por defecto usa portada; añade public/foto-perfil.jpg y cambia el src para una foto propia */}
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-2 border-[#ec4899]/50 bg-white/10 ring-2 ring-white/10 sm:h-28 sm:w-28">
                 {!photoError ? (
                   <Image
-                    src="/foto-perfil.jpg"
+                    src="/perfil.jpeg"
                     alt={playerInfo.name}
                     fill
                     className="object-cover"
