@@ -72,7 +72,7 @@ function calcHatTricksAndDobletes(
 }
 
 const rawSeasonStats: Omit<SeasonStats, "hatTricks" | "dobletes">[] = [
-  { season: "2025/26", seasonShort: "25/26", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 20, goals: 48, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, titles: 1 },
+  { season: "2025/26", seasonShort: "25/26", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 23, goals: 55, assists: 12, minutes: 2070, yellowCards: 2, redCards: 0, titles: 1 },
   { season: "2024/25", seasonShort: "24/25", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 24, goals: 40, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, titles: 1 },
   { season: "2023/24", seasonShort: "23/24", club: "Chamos Fc", clubKey: "Chamos Fc", league: "Liga Local", matches: 28, goals: 35, assists: 15, minutes: 2320, yellowCards: 3, redCards: 0, titles: 2 },
   { season: "2022/23", seasonShort: "22/23", club: "Panas Fc", clubKey: "Panas Fc", league: "Liga Local", matches: 26, goals: 30, assists: 11, minutes: 2100, yellowCards: 4, redCards: 0, titles: 0 },
