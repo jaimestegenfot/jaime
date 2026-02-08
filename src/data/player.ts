@@ -41,15 +41,72 @@ export const playerInfo: PlayerInfo = {
   contractUntil: "2027",
 };
 
-export const seasonStats: SeasonStats[] = [
-  { season: "2025/26", seasonShort: "25/26", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 20, goals: 48, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, hatTricks: 3, dobletes: 4, titles: 1 },
-  { season: "2024/25", seasonShort: "24/25", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 24, goals: 40, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, hatTricks: 1, dobletes: 4, titles: 1 },
-  { season: "2023/24", seasonShort: "23/24", club: "Chamos Fc", clubKey: "Chamos Fc", league: "Liga Local", matches: 28, goals: 35, assists: 15, minutes: 2320, yellowCards: 3, redCards: 0, hatTricks: 2, dobletes: 6, titles: 2 },
-  { season: "2022/23", seasonShort: "22/23", club: "Panas Fc", clubKey: "Panas Fc", league: "Liga Local", matches: 26, goals: 30, assists: 11, minutes: 2100, yellowCards: 4, redCards: 0, hatTricks: 0, dobletes: 3, titles: 0 },
-  { season: "2021/22", seasonShort: "21/22", club: "Barrio Fc", clubKey: "Barrio Fc", league: "Segunda División", matches: 30, goals: 12, assists: 9, minutes: 2450, yellowCards: 5, redCards: 1, hatTricks: 0, dobletes: 2, titles: 0 },
-  { season: "2020/21", seasonShort: "20/21", club: "Juvenil", clubKey: "Juvenil Fc", league: "Liga Juvenil", matches: 22, goals: 25, assists: 18, minutes: 1760, yellowCards: 1, redCards: 0, hatTricks: 3, dobletes: 5, titles: 1 },
-  { season: "2019/20", seasonShort: "19/20", club: "Juvenil", clubKey: "Juvenil Fc", league: "Liga Juvenil", matches: 22, goals: 25, assists: 18, minutes: 1760, yellowCards: 1, redCards: 0, hatTricks: 3, dobletes: 5, titles: 1 },
+// Calcula hat-tricks y dobletes coherentes con goles y partidos
+// Doblete = 2+ goles/partido; Hat-trick = 3+ goles (incluido en dobletes)
+const TARGET_HAT_TRICKS = 60;
+
+function getValidRange(goals: number, matches: number): { minH: number; maxH: number } {
+  const excess = goals - matches;
+  if (excess <= 0) return { minH: 0, maxH: 0 };
+  const maxH = Math.min(matches, Math.floor(goals / 3));
+  for (let h = 0; h <= maxH; h++) {
+    const minD = Math.max(h, excess - h);
+    const maxD = Math.min(matches, Math.floor((goals - h) / 2));
+    if (minD <= maxD) return { minH: h, maxH: maxH };
+  }
+  return { minH: 0, maxH: 0 };
+}
+
+function calcHatTricksAndDobletes(
+  goals: number,
+  matches: number,
+  targetH: number
+): { hatTricks: number; dobletes: number } {
+  const excess = goals - matches;
+  if (excess <= 0) return { hatTricks: 0, dobletes: 0 };
+  const { minH, maxH } = getValidRange(goals, matches);
+  const h = Math.max(minH, Math.min(maxH, targetH));
+  const minD = Math.max(h, excess - h);
+  const d = minD;
+  return { hatTricks: h, dobletes: d };
+}
+
+const rawSeasonStats: Omit<SeasonStats, "hatTricks" | "dobletes">[] = [
+  { season: "2025/26", seasonShort: "25/26", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 20, goals: 48, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, titles: 1 },
+  { season: "2024/25", seasonShort: "24/25", club: "Cojos Fc", clubKey: "Cojos Fc", league: "Liga Local", matches: 24, goals: 40, assists: 12, minutes: 1980, yellowCards: 2, redCards: 0, titles: 1 },
+  { season: "2023/24", seasonShort: "23/24", club: "Chamos Fc", clubKey: "Chamos Fc", league: "Liga Local", matches: 28, goals: 35, assists: 15, minutes: 2320, yellowCards: 3, redCards: 0, titles: 2 },
+  { season: "2022/23", seasonShort: "22/23", club: "Panas Fc", clubKey: "Panas Fc", league: "Liga Local", matches: 26, goals: 30, assists: 11, minutes: 2100, yellowCards: 4, redCards: 0, titles: 0 },
+  { season: "2021/22", seasonShort: "21/22", club: "Barrio Fc", clubKey: "Barrio Fc", league: "Liga Local", matches: 60, goals: 100, assists: 9, minutes: 2450, yellowCards: 5, redCards: 1, titles: 0 },
+  { season: "2020/21", seasonShort: "20/21", club: "Juvenil", clubKey: "Juvenil Fc", league: "Liga Juvenil", matches: 22, goals: 25, assists: 18, minutes: 1760, yellowCards: 1, redCards: 0, titles: 1 },
+  { season: "2019/20", seasonShort: "19/20", club: "Juvenil", clubKey: "Juvenil Fc", league: "Liga Juvenil", matches: 120, goals: 220, assists: 50, minutes: 1760, yellowCards: 1, redCards: 0, titles: 1 },
 ];
+
+// Distribuye TARGET_HAT_TRICKS proporcionalmente por goles entre temporadas
+const totalGoals = rawSeasonStats.reduce((acc, s) => acc + s.goals, 0);
+const hatTrickTargets = rawSeasonStats.map((s) => {
+  const { minH, maxH } = getValidRange(s.goals, s.matches);
+  const proportional = Math.round((s.goals / totalGoals) * TARGET_HAT_TRICKS);
+  return Math.max(minH, Math.min(maxH, proportional));
+});
+let htSum = hatTrickTargets.reduce((a, b) => a + b, 0);
+// Ajusta fino para llegar a TARGET_HAT_TRICKS
+while (htSum < TARGET_HAT_TRICKS) {
+  const i = hatTrickTargets.findIndex((t, idx) => t < getValidRange(rawSeasonStats[idx].goals, rawSeasonStats[idx].matches).maxH);
+  if (i < 0) break;
+  hatTrickTargets[i]++;
+  htSum++;
+}
+while (htSum > TARGET_HAT_TRICKS) {
+  const i = hatTrickTargets.findIndex((t, idx) => t > getValidRange(rawSeasonStats[idx].goals, rawSeasonStats[idx].matches).minH);
+  if (i < 0) break;
+  hatTrickTargets[i]--;
+  htSum--;
+}
+
+export const seasonStats: SeasonStats[] = rawSeasonStats.map((s, i) => {
+  const { hatTricks, dobletes } = calcHatTricksAndDobletes(s.goals, s.matches, hatTrickTargets[i]);
+  return { ...s, hatTricks, dobletes };
+});
 
 export type TeamFilter = "TOTAL" | "Cojos Fc" | "Chamos Fc" | "Panas Fc" | "Barrio Fc" | "Juvenil Fc";
 
